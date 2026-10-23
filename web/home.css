@@ -17,7 +17,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #F5F5F7;
+  background: #040a16 !important;
 }
 
 body {
@@ -365,28 +365,40 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   transition: transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25), box-shadow 0.26s;
   will-change: transform;
 }
-.tile img, .tile .word {
+.tile img {
   position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: 70%;
+  max-height: 56%;
   -webkit-transform: translate(-50%, -50%) translateZ(24px);
   transform: translate(-50%, -50%) translateZ(24px);
   -webkit-transition: -webkit-transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25);
   transition: transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25);
+  object-fit: contain;
 }
-.tile img { left: 50%; top: 50%; max-width: 76%; max-height: 62%; }
 .tile .word {
-  left: 8%;
-  right: 8%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
   top: 50%;
-  margin-top: -20px;
-  height: 40px;
-  line-height: 40px;
+  margin: 0;
+  padding: 0 10px;
+  box-sizing: border-box;
+  -webkit-transform: translateY(-50%) translateZ(24px);
+  transform: translateY(-50%) translateZ(24px);
+  -webkit-transition: -webkit-transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25);
+  transition: transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25);
   text-align: center;
-  font-size: 30px;
+  font-family: 'Inter', -apple-system, sans-serif;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #FFFFFF;
 }
 .tile::after {
   content: '';
@@ -412,9 +424,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   box-shadow: 0 32px 64px rgba(0, 0, 0, 0.46), 0 0 0 2.5px #FFFFFF, 0 0 32px rgba(255, 255, 255, 0.5);
   z-index: 10;
 }
-.tile.focus img, .tile.focus .word {
-  -webkit-transform: translate(-50%, -50%) translateZ(36px) scale(1.06);
-  transform: translate(-50%, -50%) translateZ(36px) scale(1.06);
+.tile.focus img {
+  -webkit-transform: translate(-50%, -50%) translateZ(36px) scale(1.08);
+  transform: translate(-50%, -50%) translateZ(36px) scale(1.08);
+}
+.tile.focus .word {
+  -webkit-transform: translateY(-50%) translateZ(36px) scale(1.06);
+  transform: translateY(-50%) translateZ(36px) scale(1.06);
 }
 .tile.focus::after { opacity: 1; }
 .night .tile { box-shadow: 0 6px 22px rgba(0, 0, 0, 0.38); }

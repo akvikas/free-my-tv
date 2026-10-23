@@ -53,9 +53,20 @@
   var stage = $('stage'), body = document.body;
 
   /** The 1920 × 1080 stage fills the window (on the TV it already is 1920 × 1080). */
+  /** The 1920 x 1080 stage scales proportionally and centers inside any screen/window ratio. */
   function fit() {
-    var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-    stage.style.webkitTransform = stage.style.transform = s === 1 ? '' : 'scale(' + s + ')';
+    var vw = window.innerWidth || document.documentElement.clientWidth || 1920;
+    var vh = window.innerHeight || document.documentElement.clientHeight || 1080;
+    var s = Math.min(vw / 1920, vh / 1080);
+    var left = Math.round((vw - 1920 * s) / 2);
+    var top = Math.round((vh - 1080 * s) / 2);
+    stage.style.position = 'absolute';
+    stage.style.left = left + 'px';
+    stage.style.top = top + 'px';
+    stage.style.webkitTransformOrigin = '0 0';
+    stage.style.transformOrigin = '0 0';
+    stage.style.webkitTransform = 'scale(' + s + ')';
+    stage.style.transform = 'scale(' + s + ')';
   }
 
   // MARK: - Apps on the shelf
