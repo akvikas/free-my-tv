@@ -9,7 +9,15 @@
 Featuring the interactive **Hero 3D Orbit Sphere** from [Vikas AK's 3D Portfolio](https://akvikas.github.io/3d-portfolio), hardware-accelerated 60 FPS WebGL, and Samsung Series 7 Tizen spatial navigation fixes.<br>
 Created & Enhanced by **[Mr. Vikas AK](https://akvikas.github.io/3d-portfolio)** · Open source · One button to restore stock.
 
-[**3D Portfolio**](https://akvikas.github.io/3d-portfolio) · [**GitHub Profile**](https://github.com/akvikas) · [**freemytv.io**](https://freemytv.io) · [3D Cyber Features](#3d-cyber-edition-features) · [Samsung Tizen Guide](#samsung-series-7-tizen-50-deployment-guide) · [Install](#install)
+<br>
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Online%203D%20Preview-00f0ff?style=for-the-badge&logo=googlechrome&logoColor=black)](https://akvikas.github.io/free-my-tv/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-akvikas.github.io-3b82f6?style=for-the-badge&logo=safari&logoColor=white)](https://akvikas.github.io/3d-portfolio)
+[![Platform](https://img.shields.io/badge/Platform-Samsung%20Tizen%205.0+-1428a0?style=for-the-badge&logo=samsung&logoColor=white)](#samsung-series-7-tizen-50-deployment-guide)
+
+<br>
+
+[**🚀 Launch Live 3D Web Demo**](https://akvikas.github.io/free-my-tv/) · [**3D Portfolio**](https://akvikas.github.io/3d-portfolio) · [**GitHub Profile**](https://github.com/akvikas) · [3D Cyber Features](#3d-cyber-edition-features) · [Samsung Tizen Guide](#samsung-series-7-tizen-50-deployment-guide)
 
 <img src=".github/preview.webp" width="880" alt="The Free My TV home screen: a glass shelf of apps, trending picks, and a drawer with the weather and crypto prices">
 
