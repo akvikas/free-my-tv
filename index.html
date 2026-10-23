@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Free My TV</title>
+<link rel="stylesheet" href="home.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="portfolioStars" width="1920" height="1080" class="layer" style="pointer-events: none; z-index: 0;"></canvas>
+  <div class="hud-frame" aria-hidden="true">
+    <div class="c tl"></div><div class="c tr"></div><div class="c bl"></div><div class="c br"></div>
+    <span class="lb">SYSTEM // VIKAS.AK</span>
+    <span class="rb">ONLINE // TIZEN 5.0</span>
+  </div>
+  <div id="sky" class="layer">
+    <div class="grad day"></div>
+    <div class="grad night"></div>
+    <canvas id="bgA" width="48" height="27"></canvas>
+    <canvas id="bgB" width="48" height="27"></canvas>
+    <div class="veil"></div>
+    <div class="lift"></div>
+  </div>
+  <div id="home" class="layer">
+    <div id="top" class="layer">
+      <h1 id="title"></h1>
+      <div id="tabs"></div>
+      <div id="quotes"></div>
+      <div id="buttons"></div>
+      <div id="cards"></div>
+      <div id="clock"><span class="time"></span><span class="date"></span></div>
+      <div id="heroOrbWrap" aria-hidden="true">
+        <canvas id="heroOrbCanvas" width="660" height="640"></canvas>
+      </div>
+    </div>
+    <div id="platter"></div>
+    <div id="tiles"></div>
+  </div>
+  <div id="drawer" class="layer"></div>
+  <div id="apps" class="layer sheet"><h2></h2><div class="grid"></div></div>
+  <div id="settings" class="layer sheet"><div class="box"></div></div>
+  <div id="shelfedit" class="layer sheet"><div class="box"></div></div>
+  <div id="langpick" class="layer sheet"><div class="box"></div></div>
+  <div id="saver" class="layer"></div>
+  <div id="toast"></div>
+</div>
+<script src="config.js"></script>
+<script src="coins.js"></script>
+<script src="i18n.js"></script>
+<script src="strings.js"></script>
+<script src="tv.js"></script>
+<script src="zones.js"></script>
+<script src="data.js"></script>
+<script src="home.js"></script>
+<script src="three.min.js"></script>
+<script src="stars.js"></script>
+<script src="heroOrb.js"></script>
+</body>
+</html>
