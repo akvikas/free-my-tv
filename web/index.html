@@ -8,6 +8,12 @@
 </head>
 <body>
 <div id="stage">
+  <canvas id="portfolioStars" width="1920" height="1080" class="layer" style="pointer-events: none; z-index: 0;"></canvas>
+  <div class="hud-frame" aria-hidden="true">
+    <div class="c tl"></div><div class="c tr"></div><div class="c bl"></div><div class="c br"></div>
+    <span class="lb">SYSTEM // VIKAS.AK</span>
+    <span class="rb">ONLINE // TIZEN 5.0</span>
+  </div>
   <div id="sky" class="layer">
     <div class="grad day"></div>
     <div class="grad night"></div>
@@ -24,6 +30,9 @@
       <div id="buttons"></div>
       <div id="cards"></div>
       <div id="clock"><span class="time"></span><span class="date"></span></div>
+      <div id="heroOrbWrap" aria-hidden="true">
+        <canvas id="heroOrbCanvas" width="660" height="640"></canvas>
+      </div>
     </div>
     <div id="platter"></div>
     <div id="tiles"></div>
@@ -44,5 +53,8 @@
 <script src="zones.js"></script>
 <script src="data.js"></script>
 <script src="home.js"></script>
+<script src="three.min.js"></script>
+<script src="stars.js"></script>
+<script src="heroOrb.js"></script>
 </body>
 </html>

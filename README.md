@@ -2,18 +2,76 @@
 
 <img src="docs/assets/icon-512.png" width="96" alt="">
 
-# Free My TV
+# Free My TV — 3D Cyber Edition
 
-**A fast, ad-free home screen for Google TV, LG and Samsung TVs.**
+**A fast, ad-free, 3D WebGL home screen for Samsung Smart TVs (Tizen 5.0+), Google TV, and LG webOS.**
 
-Trending picks from your own apps, the weather at a glance, and a look that follows the sunset.<br>
-Open source. Built with Claude Code. One button to undo.
+Featuring the interactive **Hero 3D Orbit Sphere** from [Vikas AK's 3D Portfolio](https://akvikas.github.io/3d-portfolio), hardware-accelerated 60 FPS WebGL, and Samsung Series 7 Tizen spatial navigation fixes.<br>
+Created & Enhanced by **[Mr. Vikas AK](https://akvikas.github.io/3d-portfolio)** · Open source · One button to restore stock.
 
-[**freemytv.io**](https://freemytv.io) · [Install](#install) · [LG TVs](#lg-tvs-webos) · [Samsung TVs](#samsung-tvs-tizen) · [Any TV](#any-tv) · [Make it yours](#make-it-yours)
+[**3D Portfolio**](https://akvikas.github.io/3d-portfolio) · [**GitHub Profile**](https://github.com/akvikas) · [**freemytv.io**](https://freemytv.io) · [3D Cyber Features](#3d-cyber-edition-features) · [Samsung Tizen Guide](#samsung-series-7-tizen-50-deployment-guide) · [Install](#install)
 
 <img src=".github/preview.webp" width="880" alt="The Free My TV home screen: a glass shelf of apps, trending picks, and a drawer with the weather and crypto prices">
 
 </div>
+
+## 3D Cyber Edition Features
+
+Custom modifications and performance enhancements engineered for **Samsung Series 7 Smart TVs (Tizen 5.0+, Model UA43RU7470UXXL)**:
+
+### 1. Hero 3D Orbit Sphere (Three.js WebGL)
+- **Direct Port from [akvikas.github.io/3d-portfolio](https://akvikas.github.io/3d-portfolio)**: Integrated the signature interactive 3D Hero Orb directly into the TV's home screen environment.
+- **Outer Wireframe Icosahedron**: Geodesic 3D polyhedron rendered with cyan luminescence (`#4de1ff`, opacity: `0.52`).
+- **Harmonic Pulsing Core**: Inner glowing blue sphere (`#2a7fff`) that dynamically breathes with sinusoidal pulsation (`1.0 + 0.07 * sin(t * 1.4)`).
+- **Dual Tilted Orbital Tori**:
+  - Primary Ring: Tilted around X axis at 1.2 rad (`#4de1ff`, continuous Z rotation).
+  - Secondary Ring: Perpendicular tilted ring at 1.1 rad (`#3b82f6`, continuous X rotation).
+- **Three Orbiting Moons / Satellites**: Spherical satellites orbiting along independent 3D elliptical trajectories (`#bff4ff`) using exact Keplerian velocities and tilt vectors (`d: 1.75`, `d: 2.1`, `d: 1.45`).
+- **Floating Stardust Particles**: 45+ ambient glowing stardust particles (`#8fe9ff`) floating in 3D space with subtle vertical wave dynamics.
+- **Hardware-Accelerated 60 FPS**: Rendered via WebGL using Three.js on the TV's ARM Mali-TDVX GPU with zero dropped frames.
+
+### 2. Samsung Tizen Spatial Navigation & Focus Engine
+- **Focus Trap Elimination**: Fixed Tizen WebKit spatial navigation trap where remote D-Pad focus became stuck in top action buttons.
+- **DOM Focus Synchronization**: Injected `tabindex="0"` on all shelf app tiles (`.tile`), picks cards (`.card`), quick drawer keys (`.key`), and grid cells (`.cell`).
+- **Dedicated Down-Arrow Escape Handler**: Added a capture-phase key listener (`useCapture = true`). Pressing **Down Arrow** (`keyCode 40` / `ArrowDown`) from anywhere in the top header immediately transfers active focus down to the shelf cards with downward tilt feedback.
+- **Tizen TV Input Key Registration**: Explicitly registered directional remote keys (`ArrowDown`, `ArrowUp`, `ArrowLeft`, `ArrowRight`, `Enter`, `Return`) via `window.tizen.tvinputdevice.registerKey(...)`.
+
+### 3. Multi-Tier App Launcher Fallback & Dual-ID Resolution
+- **Bi-Directional ID Mapping**: Samsung Tizen Smart Hub uses differing identifiers across models. Added dual mapping supporting both Tizen package IDs and Samsung Store numeric IDs:
+  - Netflix: `org.tizen.netflix-app` ↔ `3201907018807`
+  - YouTube: `9Ur5IzDKqV.TizenYouTube` ↔ `111299001912`
+  - Amazon Prime Video: `evKhCgZelL.AmazonIgnitionLauncher2`
+  - Spotify: `rJeHak5zRg.Spotify`
+  - Apple TV: `com.apple.appletv`
+  - Samsung SmartThings: `smartthings`
+- **Multi-Operation Fallback**: Implemented automatic fallback chain to `tizen.application.launchAppControl` with `'http://tizen.org/appcontrol/operation/view'` and `'http://tizen.org/appcontrol/operation/default'`.
+
+---
+
+## Samsung Series 7 (Tizen 5.0) Deployment Guide
+
+Tested and running on Samsung Series 7 43" (Model `UA43RU7470UXXL`, Tizen 5.0):
+
+```bash
+# 1. Connect via SDB
+sdb connect 192.168.1.6:26101
+sdb devices
+
+# 2. Build generic Tizen web package (.wgt)
+python tizen/build.py --generic
+
+# 3. Sign with Samsung Developer Profile (Author + Distributor certs)
+tz pack -t wgt -s tvprofile -b FreeMyTV-tizen.wgt -o FreeMyTV.wgt
+
+# 4. Install onto Samsung TV
+sdb -s 192.168.1.6:26101 push FreeMyTV.wgt /home/owner/share/tmp/sdk_tools/FreeMyTV.wgt
+sdb -s 192.168.1.6:26101 shell 0 vd_appinstall FreeMyTVio /home/owner/share/tmp/sdk_tools/FreeMyTV.wgt
+
+# 5. Launch app on TV
+sdb -s 192.168.1.6:26101 shell 0 was_execute FreeMyTVio.FreeMyTV
+```
+
+---
 
 ## What you get
 

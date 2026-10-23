@@ -10,6 +10,16 @@ var TV = (function () {
 
   var webos = typeof window.PalmServiceBridge !== 'undefined';
   var samsung = !webos && typeof window.tizen !== 'undefined' && !!window.tizen.application;
+  // Register directional and action keys with Tizen TV input device
+  try {
+    if (window.tizen && window.tizen.tvinputdevice) {
+      var needed = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter', 'Return'];
+      for (var ki = 0; ki < needed.length; ki++) {
+        try { window.tizen.tvinputdevice.registerKey(needed[ki]); } catch (ek) {}
+      }
+    }
+  } catch (e) {}
+
   var calls = [];   // a bridge is collected if nothing holds it before its reply arrives
 
   /** One Luna call; done(result) with null on failure. */
@@ -183,6 +193,7 @@ var TV = (function () {
           var icon = a.iconPath || '';
           if (icon && icon.indexOf('://') < 0) icon = 'file://' + icon;
           if (SAMSUNG_ICONS[a.id]) icon = SAMSUNG_ICONS[a.id];
+          if (/smartthings/i.test(a.id) || /smartthings/i.test(a.name || '')) { icon = 'icons/smartthings.svg'; }
           out.push({id: a.id, title: SAMSUNG_TITLES[a.id] || a.name || a.id, icon: icon, color: ''});
         }
         // The built-in Netflix stays only when the store's Netflix isn't installed.
@@ -197,12 +208,87 @@ var TV = (function () {
     }
   }
 
-  function samsungLaunch(id, done) {
-    try {
-      window.tizen.application.launch(id, function () { if (done) done(true); }, function () { if (done) done(false); });
-    } catch (e) {
-      if (done) done(false);
+  var ID_MAP = {
+    'org.tizen.netflix-app': '3201907018807',
+    '3201907018807': 'org.tizen.netflix-app',
+    '9Ur5IzDKqV.TizenYouTube': '111299001912',
+    '111299001912': '9Ur5IzDKqV.TizenYouTube',
+    'evKhCgZelL.AmazonIgnitionLauncher2': '3201512006785',
+    '3201512006785': 'evKhCgZelL.AmazonIgnitionLauncher2',
+    'com.samsung.tv.aria-video': '3201807016597',
+    '3201807016597': 'com.samsung.tv.aria-video',
+    'rJeHak5zRg.Spotify': '3201606009684',
+    '3201606009684': 'rJeHak5zRg.Spotify',
+    'com.samsung.tv.iot-dashboard': '3201710015016',
+    '3201710015016': 'com.samsung.tv.iot-dashboard',
+    'fiZNCxMH9Y.Hotstar': '3201711015117',
+    '3201711015117': 'fiZNCxMH9Y.Hotstar',
+    'EUKHUxrGQA.SonyLIV': '3201709014748',
+    '3201709014748': 'EUKHUxrGQA.SonyLIV',
+    'wKDM33Rods.ZEE5': '3201810017104',
+    '3201810017104': 'wKDM33Rods.ZEE5',
+    'KCKrPXpbAS.JioCinema': '3201705012339',
+    '3201705012339': 'KCKrPXpbAS.JioCinema'
+  };
+
+  function trySingleLaunch(targetId, cb) {
+    if (!targetId || !window.tizen || !window.tizen.application) {
+      if (cb) cb(false, 'no-tizen');
+      return;
     }
+    // Method 1: direct launch
+    try {
+      window.tizen.application.launch(targetId, function () {
+        if (cb) cb(true);
+      }, function (err1) {
+        // Method 2: launchAppControl with view
+        try {
+          var appControl = new window.tizen.ApplicationControl(
+            'http://tizen.org/appcontrol/operation/view',
+            null, null, null, null
+          );
+          window.tizen.application.launchAppControl(appControl, targetId, function () {
+            if (cb) cb(true);
+          }, function (err2) {
+            // Method 3: launchAppControl with default
+            try {
+              var defControl = new window.tizen.ApplicationControl(
+                'http://tizen.org/appcontrol/operation/default',
+                null, null, null, null
+              );
+              window.tizen.application.launchAppControl(defControl, targetId, function () {
+                if (cb) cb(true);
+              }, function (err3) {
+                if (cb) cb(false, (err1 && err1.message) || (err2 && err2.message) || (err3 && err3.message) || 'launch-failed');
+              });
+            } catch (e3) {
+              if (cb) cb(false, e3.message);
+            }
+          });
+        } catch (e2) {
+          if (cb) cb(false, e2.message);
+        }
+      });
+    } catch (e1) {
+      if (cb) cb(false, e1.message);
+    }
+  }
+
+  function samsungLaunch(id, done) {
+    trySingleLaunch(id, function (ok, err) {
+      if (ok) {
+        if (done) done(true);
+        return;
+      }
+      var altId = ID_MAP[id];
+      if (altId) {
+        trySingleLaunch(altId, function (ok2, err2) {
+          if (done) done(ok2, err2 || err);
+        });
+      } else {
+        if (done) done(false, err);
+      }
+    });
   }
 
   /**
@@ -380,6 +466,13 @@ var TV = (function () {
     },
 
     /** Key codes: the arrows, OK and the TV's Back (LG 461, Samsung 10009). */
-    keys: {left: 37, up: 38, right: 39, down: 40, ok: 13, back: samsung ? 10009 : 461}
+    keys: {
+      left: 37, up: 38, right: 39, down: 40, ok: 13, back: samsung ? 10009 : 461,
+      isOk: function (e) {
+        if (!e) return false;
+        var k = e.keyCode;
+        return k === 13 || k === 29443 || k === 65379 || k === 65385 || e.key === 'Enter' || e.key === 'Select';
+      }
+    }
   };
 })();

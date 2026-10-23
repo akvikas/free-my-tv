@@ -38,6 +38,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   overflow: hidden;
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
+  -webkit-perspective: 1200px;
+  perspective: 1200px;
+  -webkit-perspective-origin: 50% 60%;
+  perspective-origin: 50% 60%;
 }
 
 .layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
@@ -71,8 +75,22 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* MARK: - Moving parts: the top fades and everything rises when the drawer opens. */
 
 /* Each part is its own stack, so a focused tile (z-index) never shows over the drawer, a sheet or the screensaver. */
-#home { z-index: 1; }
-#drawer { z-index: 2; }
+#home {
+  z-index: 1;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-perspective: 1200px;
+  perspective: 1200px;
+  -webkit-perspective-origin: 50% 60%;
+  perspective-origin: 50% 60%;
+}
+#drawer {
+  z-index: 2;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-perspective: 1200px;
+  perspective: 1200px;
+}
 .sheet { z-index: 3; }
 #saver { z-index: 4; }
 
@@ -80,7 +98,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   -webkit-transition: -webkit-transform 0.38s cubic-bezier(0.32, 0.72, 0.2, 1), opacity 0.28s;
   transition: transform 0.38s cubic-bezier(0.32, 0.72, 0.2, 1), opacity 0.28s;
 }
-.drawer-open #home { -webkit-transform: translateY(-560px); transform: translateY(-560px); }
+.drawer-open #home {
+  -webkit-transform: translateY(-560px) translateZ(-80px) rotateX(4deg);
+  transform: translateY(-560px) translateZ(-80px) rotateX(4deg);
+}
 #top { -webkit-transition: opacity 0.2s; transition: opacity 0.2s; }
 .drawer-open #top { opacity: 0; }
 #drawer { -webkit-transform: translateY(560px); transform: translateY(560px); opacity: 0; }
@@ -91,7 +112,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 #title {
   position: absolute;
   left: 76px;
-  top: 52px;
+  top: 110px;
   margin: 0;
   font-size: 76px;
   font-weight: 600;
@@ -193,12 +214,19 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* MARK: - Picks: a wide card and two tall ones; focused, a card grows 5%, rises and its edge lights up. */
 
+#cards {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
 .card {
   position: absolute;
   top: 262px;
   height: 442px;
-  -webkit-transition: -webkit-transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.15);
-  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-transition: -webkit-transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25);
+  transition: transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25);
+  will-change: transform;
 }
 .card .img {
   position: absolute;
@@ -206,14 +234,16 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
   background-color: #DADADF;
   background-size: cover;
   background-position: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
-  -webkit-transition: box-shadow 0.22s;
-  transition: box-shadow 0.22s;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-transition: box-shadow 0.26s, -webkit-transform 0.26s;
+  transition: box-shadow 0.26s, transform 0.26s;
 }
 .card .img::after {
   content: '';
@@ -222,16 +252,22 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   top: 0;
   right: 0;
   bottom: 0;
-  border-radius: 18px;
-  box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.85);
-  background: -webkit-linear-gradient(-60deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 55%);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 55%);
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, 0.9), 0 0 25px rgba(255, 255, 255, 0.35);
+  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0) 70%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0) 70%);
   opacity: 0;
-  -webkit-transition: opacity 0.17s;
-  transition: opacity 0.17s;
+  -webkit-transition: opacity 0.22s;
+  transition: opacity 0.22s;
 }
-.card.focus { -webkit-transform: translateY(-6px) scale(1.05); transform: translateY(-6px) scale(1.05); z-index: 2; }
-.card.focus .img { box-shadow: 0 24px 46px rgba(0, 0, 0, 0.34); }
+.card.focus {
+  -webkit-transform: translate3d(0, -14px, 60px) scale(1.08) rotateX(-2deg);
+  transform: translate3d(0, -14px, 60px) scale(1.08) rotateX(-2deg);
+  z-index: 10;
+}
+.card.focus .img {
+  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.52), 0 12px 24px rgba(0, 0, 0, 0.25);
+}
 .card.focus .img::after { opacity: 1; }
 .card .name {
   position: absolute;
@@ -245,6 +281,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   font-weight: 600;
   letter-spacing: 0.012em;
   color: #1D1D1F;
+  -webkit-transform: translateZ(25px);
+  transform: translateZ(25px);
   -webkit-transition: color 2s;
   transition: color 2s;
 }
@@ -259,8 +297,11 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   font-size: 25px;
   font-weight: 500;
   color: #6E6E73;
+  -webkit-transform: translateZ(18px);
+  transform: translateZ(18px);
 }
 .night .card .img { background-color: #2C2C2E; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32); }
+.night .card.focus .img { box-shadow: 0 35px 70px rgba(0, 0, 0, 0.75), 0 0 0 2.5px rgba(255, 255, 255, 0.95), 0 0 35px rgba(255, 255, 255, 0.3); }
 .night .card .name { color: #F5F5F7; }
 .night .card .meta { color: rgba(245, 245, 247, 0.62); }
 
@@ -288,14 +329,25 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   top: 814px;
   height: 206px;
   border-radius: 62px;
-  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.4));
-  background: linear-gradient(rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.4));
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12), inset 0 1.5px 0 rgba(255, 255, 255, 0.95), inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.38));
+  background: linear-gradient(rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.38));
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.18), inset 0 2px 2px rgba(255, 255, 255, 0.95), inset 0 -2px 4px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  -webkit-transform: rotateX(14deg) translateZ(-8px);
+  transform: rotateX(14deg) translateZ(-8px);
+  -webkit-transform-origin: 50% 90%;
+  transform-origin: 50% 90%;
+  -webkit-transition: -webkit-transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15), box-shadow 0.35s;
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15), box-shadow 0.35s;
 }
 .night #platter {
-  background: -webkit-linear-gradient(top, rgba(34, 34, 38, 0.72), rgba(17, 17, 19, 0.6));
-  background: linear-gradient(rgba(34, 34, 38, 0.72), rgba(17, 17, 19, 0.6));
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32), inset 0 1.5px 0 rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  background: -webkit-linear-gradient(top, rgba(34, 34, 38, 0.8), rgba(17, 17, 19, 0.68));
+  background: linear-gradient(rgba(34, 34, 38, 0.8), rgba(17, 17, 19, 0.68));
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55), inset 0 2px 2px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+#tiles {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
 .tile {
@@ -303,15 +355,25 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   top: 854px;
   height: 126px;
   border-radius: 22px;
-  overflow: hidden;
   color: #FFF;
-  box-shadow: 0 4px 22px rgba(0, 0, 0, 0.14);
-  -webkit-transition: -webkit-transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), box-shadow 0.2s;
-  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), box-shadow 0.2s;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-transform: translate3d(0, 0, 0) scale(1);
+  transform: translate3d(0, 0, 0) scale(1);
+  -webkit-transition: -webkit-transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25), box-shadow 0.26s;
+  transition: transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25), box-shadow 0.26s;
+  will-change: transform;
 }
-.tile img { position: absolute; left: 50%; top: 50%; max-width: 76%; max-height: 62%; -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%); }
-.tile .word {
+.tile img, .tile .word {
   position: absolute;
+  -webkit-transform: translate(-50%, -50%) translateZ(24px);
+  transform: translate(-50%, -50%) translateZ(24px);
+  -webkit-transition: -webkit-transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25);
+  transition: transform 0.26s cubic-bezier(0.18, 0.9, 0.26, 1.25);
+}
+.tile img { left: 50%; top: 50%; max-width: 76%; max-height: 62%; }
+.tile .word {
   left: 8%;
   right: 8%;
   top: 50%;
@@ -332,17 +394,31 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   left: 0;
   top: 0;
   right: 0;
-  height: 50%;
-  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
-  background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  bottom: 0;
+  border-radius: 22px;
+  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 40%, rgba(255, 255, 255, 0) 65%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 40%, rgba(255, 255, 255, 0) 65%);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7);
   opacity: 0;
-  -webkit-transition: opacity 0.17s;
-  transition: opacity 0.17s;
+  pointer-events: none;
+  -webkit-transform: translateZ(36px);
+  transform: translateZ(36px);
+  -webkit-transition: opacity 0.24s;
+  transition: opacity 0.24s;
 }
-.tile.focus { -webkit-transform: scale(1.2); transform: scale(1.2); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.34); z-index: 2; }
+.tile.focus {
+  -webkit-transform: translate3d(0, -18px, 60px) scale(1.22) rotateX(-2deg);
+  transform: translate3d(0, -18px, 60px) scale(1.22) rotateX(-2deg);
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.46), 0 0 0 2.5px #FFFFFF, 0 0 32px rgba(255, 255, 255, 0.5);
+  z-index: 10;
+}
+.tile.focus img, .tile.focus .word {
+  -webkit-transform: translate(-50%, -50%) translateZ(36px) scale(1.06);
+  transform: translate(-50%, -50%) translateZ(36px) scale(1.06);
+}
 .tile.focus::after { opacity: 1; }
-.night .tile { box-shadow: 0 4px 22px rgba(0, 0, 0, 0.3); }
-.night .tile.focus { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6); }
+.night .tile { box-shadow: 0 6px 22px rgba(0, 0, 0, 0.38); }
+.night .tile.focus { box-shadow: 0 32px 64px rgba(0, 0, 0, 0.72), 0 0 0 2.5px rgba(255, 255, 255, 0.95), 0 0 35px rgba(255, 255, 255, 0.35); }
 
 /* MARK: - Drawer: inputs and shortcuts, weather, prices */
 
@@ -367,16 +443,25 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   border-radius: 20px;
   text-align: center;
   color: #1D1D1F;
-  -webkit-transition: -webkit-transform 0.19s cubic-bezier(0.2, 0.9, 0.3, 1.2), box-shadow 0.19s, background-color 0.14s;
-  transition: transform 0.19s cubic-bezier(0.2, 0.9, 0.3, 1.2), box-shadow 0.19s, background-color 0.14s;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-transition: -webkit-transform 0.22s cubic-bezier(0.18, 0.9, 0.26, 1.25), box-shadow 0.22s, background-color 0.14s;
+  transition: transform 0.22s cubic-bezier(0.18, 0.9, 0.26, 1.25), box-shadow 0.22s, background-color 0.14s;
 }
 .key .sym { position: absolute; left: 50%; top: 33px; width: 34px; height: 34px; margin-left: -17px; }
 .key .label { position: absolute; left: 8px; right: 8px; top: 82px; font-size: 23px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .key.off { color: #8E8E93; }
-.key.focus { background: #F5F5F7; color: #1C1C1E; -webkit-transform: scale(1.07); transform: scale(1.07); box-shadow: 0 16px 34px rgba(0, 0, 0, 0.42); z-index: 2; }
+.key.focus {
+  background: #F5F5F7;
+  color: #1C1C1E;
+  -webkit-transform: translate3d(0, -10px, 45px) scale(1.12);
+  transform: translate3d(0, -10px, 45px) scale(1.12);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.42), 0 0 0 2px #FFFFFF, 0 0 25px rgba(255, 255, 255, 0.4);
+  z-index: 10;
+}
 .night .key { color: rgba(255, 255, 255, 0.95); }
 .night .key.off { color: rgba(255, 255, 255, 0.42); }
-.night .key.focus { color: #1C1C1E; }
+.night .key.focus { color: #1C1C1E; box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7), 0 0 0 2px #FFFFFF, 0 0 25px rgba(255, 255, 255, 0.35); }
 
 .panel { position: absolute; top: 708px; height: 300px; border-radius: 30px; overflow: hidden; color: #1D1D1F; }
 .night .panel { color: #F5F5F7; }
@@ -526,3 +611,222 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* The Magic Remote's pointer: no text selection, no outlines. */
 * { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+/* MARK: - 3D Directional Spatial Tilt Micro-Physics */
+.tile.focus.tilt-r {
+  -webkit-transform: translate3d(0, -18px, 60px) scale(1.22) rotateX(-2deg) rotateY(8deg) !important;
+  transform: translate3d(0, -18px, 60px) scale(1.22) rotateX(-2deg) rotateY(8deg) !important;
+}
+.tile.focus.tilt-l {
+  -webkit-transform: translate3d(0, -18px, 60px) scale(1.22) rotateX(-2deg) rotateY(-8deg) !important;
+  transform: translate3d(0, -18px, 60px) scale(1.22) rotateX(-2deg) rotateY(-8deg) !important;
+}
+.tile.focus.tilt-u {
+  -webkit-transform: translate3d(0, -22px, 65px) scale(1.22) rotateX(-7deg) !important;
+  transform: translate3d(0, -22px, 65px) scale(1.22) rotateX(-7deg) !important;
+}
+.tile.focus.tilt-d {
+  -webkit-transform: translate3d(0, -12px, 55px) scale(1.22) rotateX(4deg) !important;
+  transform: translate3d(0, -12px, 55px) scale(1.22) rotateX(4deg) !important;
+}
+
+.card.focus.tilt-r {
+  -webkit-transform: translate3d(0, -14px, 60px) scale(1.08) rotateX(-2deg) rotateY(7deg) !important;
+  transform: translate3d(0, -14px, 60px) scale(1.08) rotateX(-2deg) rotateY(7deg) !important;
+}
+.card.focus.tilt-l {
+  -webkit-transform: translate3d(0, -14px, 60px) scale(1.08) rotateX(-2deg) rotateY(-7deg) !important;
+  transform: translate3d(0, -14px, 60px) scale(1.08) rotateX(-2deg) rotateY(-7deg) !important;
+}
+.card.focus.tilt-u {
+  -webkit-transform: translate3d(0, -18px, 65px) scale(1.08) rotateX(-6deg) !important;
+  transform: translate3d(0, -18px, 65px) scale(1.08) rotateX(-6deg) !important;
+}
+.card.focus.tilt-d {
+  -webkit-transform: translate3d(0, -10px, 55px) scale(1.08) rotateX(4deg) !important;
+  transform: translate3d(0, -10px, 55px) scale(1.08) rotateX(4deg) !important;
+}
+
+
+/* =========================================================================
+ * VIKAS AK - 3D PORTFOLIO CYBERNETIC THEME (akvikas.github.io/3d-portfolio)
+ * ========================================================================= */
+:root {
+  --bg: #040a16;
+  --glass: rgba(14, 30, 58, 0.65);
+  --line: rgba(77, 225, 255, 0.28);
+  --cyan: #4de1ff;
+  --cyan-glow: rgba(77, 225, 255, 0.6);
+  --blue: #3b82f6;
+  --text: #e8f2ff;
+  --mute: #9bb2d3;
+}
+
+html, body {
+  background: radial-gradient(1200px 600px at 75% -10%, #0b2150 0%, transparent 60%) no-repeat, #040a16 !important;
+  color: #e8f2ff !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+#stage {
+  background: radial-gradient(1200px 600px at 75% -10%, #0b2150 0%, transparent 60%) no-repeat, #040a16;
+}
+
+#sky { background: transparent !important; }
+#sky .day, #sky .night, #sky .veil, #sky .lift { background: transparent !important; }
+
+/* Cybernetic HUD Frame from akvikas.github.io */
+.hud-frame {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  right: 28px;
+  bottom: 24px;
+  pointer-events: none;
+  z-index: 5;
+}
+.hud-frame .c {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: #4de1ff;
+  border-style: solid;
+  opacity: 0.65;
+}
+.hud-frame .tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+.hud-frame .tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
+.hud-frame .bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+.hud-frame .br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+.hud-frame .lb {
+  position: absolute;
+  left: 28px;
+  top: 2px;
+  font: 600 13px ui-monospace, Menlo, Consolas, monospace;
+  color: #4de1ff;
+  letter-spacing: 0.16em;
+  opacity: 0.85;
+}
+.hud-frame .rb {
+  position: absolute;
+  right: 28px;
+  top: 2px;
+  font: 600 13px ui-monospace, Menlo, Consolas, monospace;
+  color: #4de1ff;
+  letter-spacing: 0.16em;
+  opacity: 0.85;
+}
+
+/* Header & Title */
+#title {
+  top: 110px !important;
+  color: #e8f2ff !important;
+  letter-spacing: 0.04em !important;
+  text-shadow: 0 0 30px rgba(77, 225, 255, 0.45) !important;
+}
+
+/* Hide empty tabs in no-picks mode to avoid visual clutter */
+.no-picks #tabs {
+  display: none !important;
+}
+
+.tab {
+  font-family: ui-monospace, Menlo, Consolas, monospace !important;
+  font-size: 15px !important;
+  border: 1px solid rgba(77, 225, 255, 0.22) !important;
+  border-radius: 8px !important;
+  background: rgba(14, 30, 58, 0.6) !important;
+  color: #9bb2d3 !important;
+  padding: 6px 14px !important;
+  transition: all 0.2s ease !important;
+}
+.tab.focus, .tab.on {
+  border-color: #4de1ff !important;
+  color: #4de1ff !important;
+  background: rgba(14, 30, 58, 0.85) !important;
+  box-shadow: 0 0 20px rgba(77, 225, 255, 0.4) !important;
+}
+
+/* Cybernetic HUD Clock */
+#clock {
+  color: #e8f2ff !important;
+  text-shadow: 0 0 45px rgba(77, 225, 255, 0.35) !important;
+}
+#clock .time {
+  font-weight: 200 !important;
+  color: #e8f2ff !important;
+}
+#clock .date {
+  color: #4de1ff !important;
+  font-family: ui-monospace, Menlo, Consolas, monospace !important;
+  letter-spacing: 0.1em !important;
+  font-size: 34px !important;
+  text-shadow: 0 0 22px rgba(77, 225, 255, 0.6) !important;
+}
+
+/* 3D Cyber Platter Shelf */
+#platter {
+  background: linear-gradient(180deg, rgba(14, 30, 58, 0.76), rgba(6, 14, 30, 0.86)) !important;
+  border: 1.5px solid rgba(77, 225, 255, 0.35) !important;
+  box-shadow: 0 25px 60px rgba(0, 4, 15, 0.85), 0 0 35px rgba(77, 225, 255, 0.18), inset 0 2px 3px rgba(77, 225, 255, 0.45) !important;
+  border-radius: 40px !important;
+}
+
+/* 3D App Tiles with overflow clipping to prevent text bleed */
+.tile {
+  border-radius: 20px !important;
+  border: 1px solid rgba(77, 225, 255, 0.25) !important;
+  overflow: hidden !important; /* CRITICAL: Fixes SmartThings text overlap */
+  box-shadow: 0 8px 24px rgba(0, 4, 15, 0.6) !important;
+}
+.tile.focus {
+  border: 2.5px solid #4de1ff !important;
+  box-shadow: 0 0 40px rgba(77, 225, 255, 0.8), 0 25px 60px rgba(0, 4, 15, 0.95), inset 0 0 20px rgba(77, 225, 255, 0.3) !important;
+}
+
+/* Buttons and Drawer Glass */
+.round {
+  background: rgba(14, 30, 58, 0.65) !important;
+  border: 1px solid rgba(77, 225, 255, 0.3) !important;
+  color: #4de1ff !important;
+}
+.round.focus {
+  border-color: #4de1ff !important;
+  box-shadow: 0 0 25px rgba(77, 225, 255, 0.7) !important;
+  background: rgba(77, 225, 255, 0.25) !important;
+}
+
+.key.glass {
+  background: rgba(14, 30, 58, 0.75) !important;
+  border: 1px solid rgba(77, 225, 255, 0.28) !important;
+  color: #e8f2ff !important;
+}
+.key.focus {
+  border-color: #4de1ff !important;
+  box-shadow: 0 0 30px rgba(77, 225, 255, 0.65) !important;
+  background: rgba(77, 225, 255, 0.25) !important;
+  color: #4de1ff !important;
+}
+
+/* Hero 3D Orbit Sphere from https://akvikas.github.io/3d-portfolio */
+#heroOrbWrap {
+  position: absolute;
+  left: 1140px;
+  top: 140px;
+  width: 660px;
+  height: 640px;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-transition: opacity 0.3s;
+  transition: opacity 0.3s;
+}
+
+#heroOrbCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.drawer-open #heroOrbWrap,
+.sheet.open ~ #heroOrbWrap {
+  opacity: 0.15;
+}

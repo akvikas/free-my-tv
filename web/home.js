@@ -65,6 +65,7 @@
     ['netflix', /^netflix$/, /netflix/i, ['#0A0A0A', '#000000']],
     ['youtube', /youtube/, /^youtube$/i, ['#1C1C1E', '#09090A']],
     ['prime', /^amazon$/, /prime video|amazon/i, ['#2AA8FF', '#0A68D4']],
+    ['smartthings', /smartthings/i, /smartthings/i, ['#1595FF', '#0057B8']],
     ['disney', /disney/, /disney/i, ['#173584', '#08143F']],
     ['max', /hbo|wbd/, /^(hbo )?max$|hbo max/i, ['#5C30E8', '#221684']],
     ['appletv', /appletv|apple\.tv/, /apple tv/i, ['#1C1C1E', '#000000']],
@@ -140,31 +141,95 @@
 
   function sheetOpen() { return st.zone === Z.APPS || st.zone === Z.SETTINGS || st.zone === Z.EDIT || st.zone === Z.LANG; }
 
-  function updateFocus() {
+    var tiltTimer = null;
+  function triggerTilt(el, dx, dy) {
+    if (!el || (!dx && !dy)) return;
+    el.classList.remove('tilt-l', 'tilt-r', 'tilt-u', 'tilt-d');
+    void el.offsetWidth;
+    if (dx > 0) el.classList.add('tilt-r');
+    else if (dx < 0) el.classList.add('tilt-l');
+    else if (dy > 0) el.classList.add('tilt-d');
+    else if (dy < 0) el.classList.add('tilt-u');
+    clearTimeout(tiltTimer);
+    tiltTimer = setTimeout(function () {
+      el.classList.remove('tilt-l', 'tilt-r', 'tilt-u', 'tilt-d');
+    }, 220);
+  }
+
+  function updateFocus(dx, dy) {
+    dx = (typeof dx === 'number') ? dx : 0;
+    dy = (typeof dy === 'number') ? dy : 0;
     var i, list;
-    list = $('tabs').children;
-    for (i = 0; i < list.length; i++) {
-      setClass(list[i], 'on', i === st.tab);
-      setClass(list[i], 'focus', st.zone === Z.TOP && st.top === i);
+    var tabsEl = $('tabs');
+    if (tabsEl) {
+      list = tabsEl.children;
+      for (i = 0; i < list.length; i++) {
+        setClass(list[i], 'on', i === st.tab);
+        setClass(list[i], 'focus', st.zone === Z.TOP && st.top === i);
+      }
     }
-    list = $('buttons').children;
-    for (i = 0; i < list.length; i++) setClass(list[i], 'focus', st.zone === Z.TOP && st.top === 3 + i);
-    setClass($('quotes'), 'hide', st.zone === Z.TOP && st.top >= 3);
-    list = $('cards').children;
-    for (i = 0; i < list.length; i++) setClass(list[i], 'focus', st.zone === Z.CARDS && st.card === i);
-    list = $('tiles').children;
-    for (i = 0; i < list.length; i++) setClass(list[i], 'focus', st.zone === Z.SHELF && st.shelf === i);
+    var buttonsEl = $('buttons');
+    if (buttonsEl) {
+      list = buttonsEl.children;
+      for (i = 0; i < list.length; i++) setClass(list[i], 'focus', st.zone === Z.TOP && st.top === 3 + i);
+    }
+    var quotesEl = $('quotes');
+    if (quotesEl) setClass(quotesEl, 'hide', st.zone === Z.TOP && st.top >= 3);
+    var cardsEl = $('cards');
+    if (cardsEl) {
+      list = cardsEl.children;
+      for (i = 0; i < list.length; i++) setClass(list[i], 'focus', st.zone === Z.CARDS && st.card === i);
+    }
+    var tilesEl = $('tiles');
+    if (tilesEl) {
+      list = tilesEl.children;
+      for (i = 0; i < list.length; i++) setClass(list[i], 'focus', st.zone === Z.SHELF && st.shelf === i);
+    }
     list = document.querySelectorAll('#drawer .key');
     for (i = 0; i < list.length; i++) setClass(list[i], 'focus', st.zone === Z.DRAWER && st.drawer === i);
     list = document.querySelectorAll('#apps .cell');
     for (i = 0; i < list.length; i++) setClass(list[i], 'focus', st.zone === Z.APPS && st.grid === i);
     var rows = Math.max(1, Math.ceil(others.length / 5)), r = Math.floor(st.grid / 5), first = Math.max(0, Math.min(rows - 3, r - 1));
-    $('apps').lastChild.style.webkitTransform = $('apps').lastChild.style.transform = 'translateY(' + (-first * 239) + 'px)';
-    focusRows($('settings'), st.row, st.zone === Z.SETTINGS);
-    focusRows($('shelfedit'), st.edit, st.zone === Z.EDIT);
-    focusRows($('langpick'), st.lang, st.zone === Z.LANG);
-    if (langHint) langHint.textContent = (st.lang + 1) + ' / ' + languageChoices().length + '  ·  ' + tr('OK picks, Back cancels.');
+    var appsEl = $('apps');
+    if (appsEl && appsEl.lastChild) {
+      appsEl.lastChild.style.webkitTransform = appsEl.lastChild.style.transform = 'translateY(' + (-first * 239) + 'px)';
+    }
+    var settingsEl = $('settings');
+    if (settingsEl) focusRows(settingsEl, st.row, st.zone === Z.SETTINGS);
+    var shelfeditEl = $('shelfedit');
+    if (shelfeditEl) focusRows(shelfeditEl, st.edit, st.zone === Z.EDIT);
+    var langpickEl = $('langpick');
+    if (langpickEl) focusRows(langpickEl, st.lang, st.zone === Z.LANG);
+    if (langHint) langHint.textContent = (st.lang + 1) + ' / ' + languageChoices().length + '  \u00b7  ' + tr('OK picks, Back cancels.');
     setClass(body, 'drawer-open', st.zone === Z.DRAWER);
+
+    // Synchronize DOM .focus() with st.zone so Tizen spatial navigation never gets lost
+    try {
+      if (st.zone === Z.SHELF && tilesEl && tilesEl.children[st.shelf]) {
+        tilesEl.children[st.shelf].focus();
+      } else if (st.zone === Z.TOP && buttonsEl && buttonsEl.children[st.top - 3]) {
+        buttonsEl.children[st.top - 3].focus();
+      } else if (st.zone === Z.CARDS && cardsEl && cardsEl.children[st.card]) {
+        cardsEl.children[st.card].focus();
+      } else if (st.zone === Z.DRAWER) {
+        var dKeys = document.querySelectorAll('#drawer .key');
+        if (dKeys[st.drawer]) dKeys[st.drawer].focus();
+      } else if (st.zone === Z.APPS) {
+        var aCells = document.querySelectorAll('#apps .cell');
+        if (aCells[st.grid]) aCells[st.grid].focus();
+      }
+    } catch (e) {}
+
+    if (dx || dy) {
+      if (st.zone === Z.SHELF && tilesEl && tilesEl.children[st.shelf]) {
+        triggerTilt(tilesEl.children[st.shelf], dx, dy);
+      } else if (st.zone === Z.CARDS && cardsEl && cardsEl.children[st.card]) {
+        triggerTilt(cardsEl.children[st.card], dx, dy);
+      } else if (st.zone === Z.DRAWER) {
+        var dKeys2 = document.querySelectorAll('#drawer .key');
+        if (dKeys2[st.drawer]) triggerTilt(dKeys2[st.drawer], dx, dy);
+      }
+    }
   }
 
   function focusRows(sheet, index, on) {
@@ -196,7 +261,7 @@
   var TAB_KIND = [null, 'movie', 'tv'];
 
   function renderTop() {
-    $('title').textContent = tr('For You');
+    $('title').innerHTML = '<span style="color: #4de1ff; text-shadow: 0 0 25px rgba(77,225,255,0.6);">Mr.Vikas AK</span>';
     var tabs = $('tabs');
     tabs.innerHTML = '';
     var names = [tr('Explore'), tr('Movies'), tr('Shows')];
@@ -240,6 +305,7 @@
     var rects = [[80, 1040], [1160, 320], [1520, 320]];
     for (var c = 0; c < list.length; c++) {
       var p = list[c], card = el('div', 'card', holder);
+      card.setAttribute('tabindex', '0');
       card.style.left = rects[c][0] + 'px';
       card.style.width = rects[c][1] + 'px';
       var img = el('div', 'img', card);
@@ -302,6 +368,7 @@
     tiles.innerHTML = '';
     for (var i = 0; i < n; i++) {
       var t = el('div', 'tile', tiles);
+      t.setAttribute('tabindex', '0');
       t.style.left = (left + i * (tw + gap)) + 'px';
       t.style.top = (854 + 126 - th) + 'px';
       t.style.width = tw + 'px';
@@ -338,6 +405,7 @@
       }
       if (k === 0 && drawerInputs) el('div', 'row-title', d, tr('Inputs')).style.left = '84px';
       var item = drawerItems[k], key = el('div', 'key glass' + (item.off ? ' off' : ''), d);
+      key.setAttribute('tabindex', '0');
       key.style.left = xPos + 'px';
       key.style.width = tw + 'px';
       sym(item.symbol, key);
@@ -649,8 +717,8 @@
 
   function launcher(id, name) {
     return function () {
-      TV.launch(id, null, function (ok) {
-        if (!ok) toast(trf("Couldn't open {app}.", {app: name || id}));
+      TV.launch(id, null, function (ok, err) {
+        if (!ok) toast(trf("Couldn't open {app}.", {app: name || id}) + (err ? ' (' + err + ')' : ''));
       });
     };
   }
@@ -753,7 +821,7 @@
         if (dy) st.lang = Math.max(0, Math.min(languageChoices().length - 1, st.lang + dy));
         break;
     }
-    updateFocus();
+    updateFocus(dx, dy);
   }
 
   function back() {
@@ -783,7 +851,14 @@
       else if (zone === Z.LANG) st.lang = index;
       updateFocus();
     };
-    node.onclick = function () { node.onmouseover(); activate(); };
+    node.onclick = function (e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      node.onmouseover();
+      activate();
+    };
+    node.onpointerdown = function (e) {
+      node.onmouseover();
+    };
   }
 
   // MARK: - Toast
@@ -861,16 +936,42 @@
 
   document.addEventListener('keydown', function (e) {
     var k = e.keyCode;
-    if (poke()) { e.preventDefault(); return; }   // the first press only wakes the screen
-    if (k === TV.keys.left) move(-1, 0);
-    else if (k === TV.keys.right) move(1, 0);
-    else if (k === TV.keys.up) move(0, -1);
-    else if (k === TV.keys.down) move(0, 1);
-    else if (k === TV.keys.ok) activate();
-    else if (k === TV.keys.back || k === 27 || k === 8) back();
+    var isDown = k === 40 || e.key === 'ArrowDown' || k === TV.keys.down;
+    var isUp = k === 38 || e.key === 'ArrowUp' || k === TV.keys.up;
+    var isLeft = k === 37 || e.key === 'ArrowLeft' || k === TV.keys.left;
+    var isRight = k === 39 || e.key === 'ArrowRight' || k === TV.keys.right;
+    var isOk = k === 13 || k === 29443 || k === 65379 || k === 65385 || e.key === 'Enter' || e.key === 'Select' || (TV.keys.isOk && TV.keys.isOk(e));
+    var isBack = k === TV.keys.back || k === 10009 || k === 461 || k === 27 || k === 8 || e.key === 'Escape' || e.key === 'Return';
+
+    if (poke()) { e.preventDefault(); return; }
+
+    // Guarantee escape from TOP row down to main shelf cards on Down Arrow
+    if (isDown) {
+      if (st.zone === Z.TOP) {
+        if (cards.length) {
+          st.zone = Z.CARDS;
+          st.card = 0;
+        } else {
+          st.zone = Z.SHELF;
+          st.shelf = Math.min(Math.max(0, shelf.length - 1), st.shelf || 0);
+        }
+        updateFocus(0, 1);
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      move(0, 1);
+    }
+    else if (isUp) move(0, -1);
+    else if (isLeft) move(-1, 0);
+    else if (isRight) move(1, 0);
+    else if (isOk) activate();
+    else if (isBack) back();
     else return;
+
     e.preventDefault();
-  });
+    e.stopPropagation();
+  }, true);
   document.addEventListener('mousemove', function () { poke(); });
 
   // MARK: - Start
@@ -957,5 +1058,11 @@
   }, 30000);
 
   // For the browser preview and tests.
+    setTimeout(function () {
+    st.zone = Z.SHELF;
+    st.shelf = 0;
+    updateFocus();
+  }, 120);
+
   window.FreeMyTV = {state: st, move: move, activate: activate, back: back, showSaver: showSaver, hideSaver: hideSaver, toast: toast};
 })();
